@@ -3,7 +3,7 @@ import { loadConfig, saveConfig, clearToken } from '../lib/config';
 import { useData } from '../data/DataProvider';
 
 export default function Settings() {
-  const { reload } = useData();
+  const { reload, exportDoc, importDoc } = useData();
   const [cfg, setCfg] = useState(loadConfig());
   const [saved, setSaved] = useState(false);
   const set = (k) => (e) => { setCfg({ ...cfg, [k]: e.target.value }); setSaved(false); };
@@ -19,6 +19,34 @@ export default function Settings() {
     clearToken();
     setCfg({ ...cfg, token: '' });
     reload();
+  };
+
+  const onExport = () => {
+    const blob = new Blob([JSON.stringify(exportDoc(), null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `interview-prep-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const onImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(String(reader.result));
+        if (window.confirm('Replace ALL current data with the imported file? This overwrites the repo on next save.')) {
+          importDoc(obj);
+        }
+      } catch {
+        window.alert('Import failed: file is not valid JSON.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   return (
@@ -52,6 +80,17 @@ export default function Settings() {
           </div>
           {saved && <p className="muted">Saved. Check the status bar above for sync state.</p>}
         </form>
+      </div>
+      <div className="panel">
+        <h2 style={{ marginTop: 0 }}>Backup</h2>
+        <p className="muted">Export a full JSON snapshot, or import one to replace all data (a manual backup — GitHub sync is the primary store).</p>
+        <div className="form-actions" style={{ justifyContent: 'flex-start' }}>
+          <button type="button" onClick={onExport}>Export JSON</button>
+          <label className="toggle" style={{ cursor: 'pointer' }}>
+            <span className="tag" style={{ padding: '6px 12px' }}>Import JSON…</span>
+            <input type="file" accept="application/json" onChange={onImport} style={{ display: 'none' }} />
+          </label>
+        </div>
       </div>
     </div>
   );
