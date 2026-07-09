@@ -1,16 +1,36 @@
-# React + Vite
+# Interview Prep Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A personal, single-user interview-prep tracker: LeetCode review, system-design notes,
+and a behavioral/STAR story bank with a coverage matrix. React + Vite, deployed to
+GitHub Pages, with data stored in a private GitHub repo via the Contents API.
 
-Currently, two official plugins are available:
+## One-time setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. **Public app repo** — push this project to a public repo named `interview-prep-dashboard`
+   (the Vite `base` in `vite.config.js` must match the repo name). In the repo's
+   **Settings → Pages**, set **Source = GitHub Actions**. Pushing to `main` deploys to
+   `https://<you>.github.io/interview-prep-dashboard/`.
+2. **Private data repo** — create a **private** repo named `interview-prep-data`. It can
+   start empty; the app creates `data.json` on first save.
+3. **Token** — create a **fine-grained personal access token** (GitHub → Settings →
+   Developer settings → Fine-grained tokens) scoped to **only** `interview-prep-data`,
+   with **Repository permissions → Contents: Read and write**. Set an expiration.
+4. **Configure** — open the deployed app, go to **Settings**, paste the token and your
+   repo owner/name (`interview-prep-data`), and Save & connect. The token lives only in
+   this browser's `localStorage`.
 
-## React Compiler
+## Local development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev     # dev server
+npm run test    # unit tests (Vitest)
+npm run build   # production build
+```
 
-## Expanding the Oxlint configuration
+## Security notes
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- The public app URL is only code — no secrets. A visitor without your token sees an
+  empty, unconfigured app.
+- The token is the only sensitive asset; keep it fine-grained + expiring, and use
+  **Clear token / sign out** in Settings on shared devices.
