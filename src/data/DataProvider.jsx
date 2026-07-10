@@ -21,6 +21,7 @@ export function DataProvider({ children }) {
   const [sha, setSha] = useState(null);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
+  const [loaded, setLoaded] = useState(false);
 
   const configured = isConfigured(loadConfig());
 
@@ -32,9 +33,11 @@ export function DataProvider({ children }) {
       setDoc(normalizeDoc(res.doc));
       setSha(res.sha);
       setStatus('ready');
+      setLoaded(true);
     } catch (e) {
       setError(String(e.message || e));
       setStatus('error');
+      setLoaded(false);
     }
   }, []);
 
@@ -43,6 +46,11 @@ export function DataProvider({ children }) {
   const persist = useCallback(async (nextDoc) => {
     setDoc(nextDoc);
     if (!isConfigured(loadConfig())) return;
+    if (!loaded) {
+      setError('Load failed — click Reload before saving your changes.');
+      setStatus('error');
+      return;
+    }
     setStatus('saving'); setError(null);
     try {
       const newSha = await saveData(loadConfig(), nextDoc, sha);
@@ -56,7 +64,7 @@ export function DataProvider({ children }) {
       }
       setStatus('error');
     }
-  }, [sha]);
+  }, [sha, loaded]);
 
   const mutate = (key, next) => persist({ ...doc, [key]: next });
 
