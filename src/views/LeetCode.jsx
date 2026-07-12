@@ -5,6 +5,7 @@ import { latestAttempt } from '../lib/normalize';
 import { todayISO, addDaysISO } from '../lib/dates';
 import { OUTCOMES } from '../lib/constants';
 import Modal from '../components/Modal';
+import ProblemDetailModal from '../components/ProblemDetailModal';
 
 const STATUS_LABEL = { overdue: 'Overdue', due: 'Due today', upcoming: 'Upcoming', banked: 'Banked' };
 const ORDER = ['overdue', 'due', 'upcoming', 'banked'];
@@ -28,6 +29,7 @@ export default function LeetCode() {
   const [dueOnly, setDueOnly] = useState(false);
   const [editing, setEditing] = useState(null); // 'new' | problem object | null
   const [confirmId, setConfirmId] = useState(null);
+  const [detail, setDetail] = useState(null);
 
   const counts = useMemo(() => {
     const c = { overdue: 0, due: 0, upcoming: 0, banked: 0 };
@@ -108,6 +110,8 @@ export default function LeetCode() {
                   </td>
                   <td>
                     <div className="row-actions">
+                      <button onClick={() => setDetail({ id: p.id, log: false })}>View</button>
+                      <button onClick={() => setDetail({ id: p.id, log: true })}>Log</button>
                       <button onClick={() => setEditing(p)}>Edit</button>
                       <button className="danger" onClick={() => setConfirmId(p.id)}>Delete</button>
                     </div>
@@ -138,6 +142,10 @@ export default function LeetCode() {
             <button className="danger" onClick={() => { deleteProblem(confirmId); setConfirmId(null); }}>Delete</button>
           </div>
         </Modal>
+      )}
+
+      {detail && (
+        <ProblemDetailModal problemId={detail.id} initialLog={detail.log} onClose={() => setDetail(null)} />
       )}
     </div>
   );
