@@ -1,7 +1,7 @@
 const API = 'https://api.github.com';
 
 export function emptyDoc() {
-  return { version: 1, leetcode: [], systemDesign: [], behavioral: [] };
+  return { version: 2, leetcode: [], systemDesign: [], behavioral: [] };
 }
 
 export function encodeContent(obj) {

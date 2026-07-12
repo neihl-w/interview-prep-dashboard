@@ -3,7 +3,7 @@ import { encodeContent, decodeContent, emptyDoc } from './storage';
 
 describe('emptyDoc', () => {
   it('has the four top-level keys', () => {
-    expect(emptyDoc()).toEqual({ version: 1, leetcode: [], systemDesign: [], behavioral: [] });
+    expect(emptyDoc()).toEqual({ version: 2, leetcode: [], systemDesign: [], behavioral: [] });
   });
 });
 
