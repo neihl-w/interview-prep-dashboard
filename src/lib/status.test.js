@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { statusFor, sortProblems, STATUS_RANK } from './status';
+import { statusFor, sortProblems, STATUS_RANK, deltaLabel } from './status';
 
 const TODAY = '2026-07-09';
 
@@ -54,5 +54,14 @@ describe('sortProblems', () => {
 describe('STATUS_RANK', () => {
   it('ranks statuses in urgency order', () => {
     expect(STATUS_RANK).toEqual({ overdue: 0, due: 1, upcoming: 2, banked: 3 });
+  });
+});
+
+describe('deltaLabel', () => {
+  it('labels each status', () => {
+    expect(deltaLabel(statusFor('2026-07-06', TODAY))).toBe('3d overdue');
+    expect(deltaLabel(statusFor('2026-07-09', TODAY))).toBe('Due today');
+    expect(deltaLabel(statusFor('2026-07-12', TODAY))).toBe('in 3d');
+    expect(deltaLabel(statusFor('', TODAY))).toBe('Banked');
   });
 });

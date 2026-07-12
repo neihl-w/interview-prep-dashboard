@@ -94,3 +94,7 @@ tr.row-due { background: rgba(240,169,43,.06); }
 .checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; }
 .checks label { flex-direction: row; align-items: center; gap: 8px; color: var(--text); }
 .checks input { width: auto; }
+
+/* leetcode attempts */
+.count-badge { margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--muted); background: var(--panel-2); border: 1px solid var(--border); white-space: nowrap; }
+td.notes-cell { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }

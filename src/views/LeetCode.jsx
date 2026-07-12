@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useData } from '../data/DataProvider';
-import { statusFor, sortProblems } from '../lib/status';
+import { statusFor, sortProblems, deltaLabel } from '../lib/status';
+import { latestAttempt } from '../lib/normalize';
 import { todayISO, addDaysISO } from '../lib/dates';
 import { OUTCOMES } from '../lib/constants';
 import Modal from '../components/Modal';
@@ -8,13 +9,15 @@ import Modal from '../components/Modal';
 const STATUS_LABEL = { overdue: 'Overdue', due: 'Due today', upcoming: 'Upcoming', banked: 'Banked' };
 const ORDER = ['overdue', 'due', 'upcoming', 'banked'];
 
-const BLANK = { name: '', url: '', pattern: '', outcome: '', signalTool: '', gapBug: '', notes: '', resolveDate: '' };
+const BLANK = { name: '', url: '', pattern: '', signalTool: '', resolveDate: '', outcome: '', gapBug: '', notes: '' };
 
-function deltaLabel(s) {
-  if (s.status === 'due') return 'Due today';
-  if (s.status === 'overdue') return `${Math.abs(s.dayDelta)}d overdue`;
-  if (s.status === 'upcoming') return `in ${s.dayDelta}d`;
-  return 'Banked';
+// Explicit pick: the edit form must not carry attempts/id/createdAt into the
+// updateProblem patch, or a stale snapshot could clobber attempts logged elsewhere.
+function problemFields(p) {
+  return {
+    name: p.name || '', url: p.url || '', pattern: p.pattern || '',
+    signalTool: p.signalTool || '', resolveDate: p.resolveDate || '',
+  };
 }
 
 export default function LeetCode() {
@@ -81,19 +84,24 @@ export default function LeetCode() {
         <table>
           <thead>
             <tr>
-              <th>Name</th><th>Pattern</th><th>Outcome</th><th>Signal → Tool</th><th>Re-solve</th><th></th>
+              <th>Name</th><th>Pattern</th><th>Outcome</th><th>Signal → Tool</th><th>Notes</th><th>Re-solve</th><th></th>
             </tr>
           </thead>
           <tbody>
             {rows.map((p) => {
               const s = statusFor(p.resolveDate, today);
+              const last = latestAttempt(p);
               const rowCls = s.status === 'overdue' ? 'row-overdue' : s.status === 'due' ? 'row-due' : '';
               return (
                 <tr key={p.id} className={rowCls}>
-                  <td>{p.url ? <a href={p.url} target="_blank" rel="noreferrer">{p.name}</a> : p.name}</td>
+                  <td>
+                    {p.url ? <a href={p.url} target="_blank" rel="noreferrer">{p.name}</a> : p.name}
+                    {p.attempts.length > 1 && <span className="count-badge">×{p.attempts.length}</span>}
+                  </td>
                   <td>{p.pattern}</td>
-                  <td>{p.outcome}</td>
+                  <td>{last.outcome}</td>
                   <td>{p.signalTool}</td>
+                  <td className="notes-cell" title={last.notes}>{last.notes || '—'}</td>
                   <td>
                     <span className={'badge ' + s.status}>{deltaLabel(s)}</span>
                     {p.resolveDate && <div className="muted" style={{ fontSize: 12 }}>{p.resolveDate}</div>}
@@ -113,7 +121,12 @@ export default function LeetCode() {
 
       {editing && (
         <Modal title={editing === 'new' ? 'Add problem' : 'Edit problem'} onClose={() => setEditing(null)}>
-          <ProblemForm initial={editing === 'new' ? BLANK : { ...BLANK, ...editing }} onSave={onSave} onCancel={() => setEditing(null)} />
+          <ProblemForm
+            initial={editing === 'new' ? BLANK : problemFields(editing)}
+            withAttemptFields={editing === 'new'}
+            onSave={onSave}
+            onCancel={() => setEditing(null)}
+          />
         </Modal>
       )}
 
@@ -130,7 +143,7 @@ export default function LeetCode() {
   );
 }
 
-function ProblemForm({ initial, onSave, onCancel }) {
+function ProblemForm({ initial, withAttemptFields, onSave, onCancel }) {
   const [f, setF] = useState(initial);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const setDate = (v) => setF({ ...f, resolveDate: v });
@@ -139,15 +152,19 @@ function ProblemForm({ initial, onSave, onCancel }) {
       <label>Name<input value={f.name} onChange={set('name')} required /></label>
       <label>Link<input value={f.url} onChange={set('url')} placeholder="https://leetcode.com/…" /></label>
       <label>Pattern<input value={f.pattern} onChange={set('pattern')} placeholder="Sliding Window" /></label>
-      <label>Outcome
-        <select value={f.outcome} onChange={set('outcome')}>
-          <option value="">—</option>
-          {OUTCOMES.map((o) => <option key={o} value={o}>{o}</option>)}
-        </select>
-      </label>
       <label>Signal → Tool<input value={f.signalTool} onChange={set('signalTool')} placeholder="one-line trigger → technique" /></label>
-      <label>Gap / Bug<input value={f.gapBug} onChange={set('gapBug')} /></label>
-      <label>Notes<textarea value={f.notes} onChange={set('notes')} /></label>
+      {withAttemptFields && (
+        <>
+          <label>Outcome
+            <select value={f.outcome} onChange={set('outcome')}>
+              <option value="">—</option>
+              {OUTCOMES.map((o) => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </label>
+          <label>Gap / Bug<input value={f.gapBug} onChange={set('gapBug')} /></label>
+          <label>Notes<textarea value={f.notes} onChange={set('notes')} /></label>
+        </>
+      )}
       <label>Re-solve date<input type="date" value={f.resolveDate} onChange={set('resolveDate')} /></label>
       <div className="quickset">
         <button type="button" onClick={() => setDate(todayISO())}>Today</button>

@@ -21,3 +21,10 @@ export function sortProblems(problems, today = todayISO()) {
     return (a.name || '').localeCompare(b.name || '');
   });
 }
+
+export function deltaLabel(s) {
+  if (s.status === 'due') return 'Due today';
+  if (s.status === 'overdue') return `${Math.abs(s.dayDelta)}d overdue`;
+  if (s.status === 'upcoming') return `in ${s.dayDelta}d`;
+  return 'Banked';
+}
