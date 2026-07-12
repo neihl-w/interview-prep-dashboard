@@ -34,7 +34,7 @@ export default function ProblemDetailModal({ problemId, initialLog, onClose }) {
           onCancel={() => setLogging(false)}
         />
       ) : (
-        <button className="primary" onClick={() => { setLogging(true); setEditId(null); }}>+ Log attempt</button>
+        <button className="primary" onClick={() => { setLogging(true); setEditId(null); setConfirmId(null); }}>+ Log attempt</button>
       )}
 
       <h3 className="attempts-title">Attempts ({problem.attempts.length})</h3>
@@ -53,7 +53,7 @@ export default function ProblemDetailModal({ problemId, initialLog, onClose }) {
               <span className="muted">{a.date}</span>
               {a.outcome && <span className="badge banked">outcome {a.outcome}</span>}
               <span className="attempt-actions">
-                <button onClick={() => { setEditId(a.id); setLogging(false); }}>Edit</button>
+                <button onClick={() => { setEditId(a.id); setLogging(false); setConfirmId(null); }}>Edit</button>
                 {confirmId === a.id ? (
                   <>
                     <button className="danger" onClick={() => { deleteAttempt(problem.id, a.id); setConfirmId(null); }}>Confirm</button>
