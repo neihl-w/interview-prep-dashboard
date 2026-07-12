@@ -23,3 +23,7 @@ export function diffDays(fromISO, toISO) {
   const b = new Date(ty, tm - 1, td);
   return Math.round((b - a) / 86400000);
 }
+
+export function epochToISO(ms) {
+  return isoOf(new Date(ms));
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { addDaysISO, diffDays } from './dates';
+import { addDaysISO, diffDays, epochToISO } from './dates';
 
 describe('addDaysISO', () => {
   it('adds days within a month', () => {
@@ -28,5 +28,14 @@ describe('diffDays', () => {
   });
   it('counts across a month boundary', () => {
     expect(diffDays('2026-07-30', '2026-08-02')).toBe(3);
+  });
+});
+
+describe('epochToISO', () => {
+  it('converts epoch ms to a local YYYY-MM-DD', () => {
+    expect(epochToISO(new Date(2026, 0, 5, 23, 59).getTime())).toBe('2026-01-05');
+  });
+  it('pads month and day', () => {
+    expect(epochToISO(new Date(2026, 8, 3).getTime())).toBe('2026-09-03');
   });
 });
