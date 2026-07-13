@@ -58,7 +58,7 @@ export default function LeetCode() {
   };
 
   return (
-    <div className="view">
+    <div className="view view-wide">
       <h1>LeetCode</h1>
 
       <div className="chips">
@@ -83,10 +83,18 @@ export default function LeetCode() {
       {rows.length === 0 ? (
         <p className="muted">No problems match. Add one to get started.</p>
       ) : (
-        <table>
+        <div className="table-wrap">
+        <table className="lc-table">
           <thead>
             <tr>
-              <th>Name</th><th>Pattern</th><th>Outcome</th><th>Signal → Tool</th><th>Notes</th><th>Re-solve</th><th></th>
+              {/* Fixed layout: th widths set the columns; Notes takes the leftover. */}
+              <th style={{ width: 190 }}>Name</th>
+              <th style={{ width: 130 }}>Pattern</th>
+              <th style={{ width: 80 }}>Outcome</th>
+              <th style={{ width: 220 }}>Signal → Tool</th>
+              <th>Notes</th>
+              <th style={{ width: 120 }}>Re-solve</th>
+              <th style={{ width: 230 }}></th>
             </tr>
           </thead>
           <tbody>
@@ -103,7 +111,7 @@ export default function LeetCode() {
                   <td>{p.pattern}</td>
                   <td>{last.outcome}</td>
                   <td>{p.signalTool}</td>
-                  <td className="notes-cell" title={last.notes}>{last.notes || '—'}</td>
+                  <td className="notes-cell">{last.notes || '—'}</td>
                   <td>
                     <span className={'badge ' + s.status}>{deltaLabel(s)}</span>
                     {p.resolveDate && <div className="muted" style={{ fontSize: 12 }}>{p.resolveDate}</div>}
@@ -121,6 +129,7 @@ export default function LeetCode() {
             })}
           </tbody>
         </table>
+        </div>
       )}
 
       {editing && (

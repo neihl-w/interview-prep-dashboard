@@ -4,10 +4,12 @@ import { OUTCOMES } from '../lib/constants';
 
 // Log mode (resolveDate prop passed): shows the "next re-solve" scheduler and
 // calls onSave(fields, nextResolveDate). Edit mode (no resolveDate): onSave(fields).
+// The scheduler starts blank, not at the old resolveDate — otherwise saving
+// without touching it silently keeps a stale date and the due tag never updates.
 export default function AttemptForm({ initial, resolveDate, onSave, onCancel }) {
   const withReschedule = resolveDate !== undefined;
   const [f, setF] = useState({ date: todayISO(), outcome: '', gapBug: '', notes: '', ...initial });
-  const [next, setNext] = useState(resolveDate || '');
+  const [next, setNext] = useState('');
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const submit = (e) => {
     e.preventDefault();
@@ -28,7 +30,10 @@ export default function AttemptForm({ initial, resolveDate, onSave, onCancel }) 
       <label>Notes<textarea value={f.notes} onChange={set('notes')} /></label>
       {withReschedule && (
         <>
-          <label>Next re-solve date<input type="date" value={next} onChange={(e) => setNext(e.target.value)} /></label>
+          <label>
+            <span>Next re-solve date <span className="muted">(leave blank to bank{resolveDate ? `; was ${resolveDate}` : ''})</span></span>
+            <input type="date" value={next} onChange={(e) => setNext(e.target.value)} />
+          </label>
           <div className="quickset">
             <button type="button" onClick={() => setNext(todayISO())}>Today</button>
             <button type="button" onClick={() => setNext(addDaysISO(3))}>+3 days</button>
