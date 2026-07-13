@@ -1,15 +1,7 @@
-# Interview Prep Dashboard
 
-A personal, single-user interview-prep tracker: LeetCode review, system-design notes,
-and a behavioral/STAR story bank with a coverage matrix. React + Vite, deployed to
-GitHub Pages, with data stored in a private GitHub repo via the Contents API.
 
 ## One-time setup
 
-1. **Public app repo** — push this project to a public repo named `interview-prep-dashboard`
-   (the Vite `base` in `vite.config.js` must match the repo name). In the repo's
-   **Settings → Pages**, set **Source = GitHub Actions**. Pushing to `main` deploys to
-   `https://<you>.github.io/interview-prep-dashboard/`.
 2. **Private data repo** — create a **private** repo named `interview-prep-data`. It can
    start empty; the app creates `data.json` on first save.
 3. **Token** — create a **fine-grained personal access token** (GitHub → Settings →
