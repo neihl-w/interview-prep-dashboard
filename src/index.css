@@ -105,7 +105,7 @@ tr.row-due { background: rgba(240,169,43,.06); }
 
 /* leetcode attempts */
 .count-badge { margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--muted); background: var(--panel-2); border: 1px solid var(--border); white-space: nowrap; }
-td.notes-cell { white-space: pre-wrap; color: var(--muted); }
+td.notes-cell { color: var(--muted); }
 .detail-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 8px; }
 .detail-signal { font-weight: 600; margin: 6px 0 14px; }
 .attempts-title { margin: 18px 0 4px; font-size: 15px; }
@@ -115,4 +115,32 @@ td.notes-cell { white-space: pre-wrap; color: var(--muted); }
 .attempt-actions { margin-left: auto; display: flex; gap: 6px; }
 .attempt-actions button { padding: 3px 9px; font-size: 13px; }
 .attempt-field { margin-top: 6px; font-size: 14px; }
-.attempt-notes { margin-top: 6px; white-space: pre-wrap; }
+.attempt-notes { margin-top: 6px; }
+
+/* rich-text notes: the small Markdown subset (bold/italic/code + lists) */
+.notes-rich { line-height: 1.5; }
+.notes-rich > :first-child { margin-top: 0; }
+.notes-rich > :last-child { margin-bottom: 0; }
+.notes-rich p { margin: 0 0 6px; }
+.notes-rich ul, .notes-rich ol { margin: 0 0 6px; padding-left: 1.4em; }
+.notes-rich li { margin: 1px 0; }
+.notes-rich strong { color: var(--text); font-weight: 700; }
+.notes-rich em { font-style: italic; }
+.notes-rich code { background: var(--panel-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 4px; font-size: .9em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+/* table notes: clamp to ~3 lines with a Show more / Show less toggle */
+.notes-cell-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.notes-clamp { overflow: hidden; }
+.notes-clamp:not(.expanded) { max-height: 4.5em; }
+.link-btn { border: none; background: none; padding: 2px 0; color: var(--accent); font-size: 13px; }
+.link-btn:hover { border: none; text-decoration: underline; }
+
+/* notes editor toolbar */
+.notes-field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.notes-editor { display: flex; flex-direction: column; gap: 6px; }
+.notes-toolbar { display: flex; align-items: stretch; gap: 4px; flex-wrap: wrap; }
+.notes-toolbar button { padding: 3px 9px; font-size: 13px; line-height: 1.3; min-width: 32px; }
+.notes-toolbar button.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.notes-toolbar-sep { width: 1px; background: var(--border); margin: 2px 4px; }
+.notes-hint { margin: 0; font-size: 12px; }
+.notes-hint code { background: var(--panel-2); border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; font-size: 11px; }

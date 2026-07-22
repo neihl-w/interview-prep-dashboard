@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useData } from '../data/DataProvider';
 import { statusFor, sortProblems, deltaLabel } from '../lib/status';
 import { latestAttempt } from '../lib/normalize';
@@ -6,6 +6,8 @@ import { todayISO, addDaysISO } from '../lib/dates';
 import { OUTCOMES } from '../lib/constants';
 import Modal from '../components/Modal';
 import ProblemDetailModal from '../components/ProblemDetailModal';
+import RichText from '../components/RichText';
+import NotesEditor from '../components/NotesEditor';
 
 const STATUS_LABEL = { overdue: 'Overdue', due: 'Due today', upcoming: 'Upcoming', banked: 'Banked' };
 const ORDER = ['overdue', 'due', 'upcoming', 'banked'];
@@ -111,7 +113,7 @@ export default function LeetCode() {
                   <td>{p.pattern}</td>
                   <td>{last.outcome}</td>
                   <td>{p.signalTool}</td>
-                  <td className="notes-cell">{last.notes || '—'}</td>
+                  <td className="notes-cell"><NotesCell text={last.notes} /></td>
                   <td>
                     <span className={'badge ' + s.status}>{deltaLabel(s)}</span>
                     {p.resolveDate && <div className="muted" style={{ fontSize: 12 }}>{p.resolveDate}</div>}
@@ -160,6 +162,34 @@ export default function LeetCode() {
   );
 }
 
+// Notes in the table stay tidy: clamp to ~3 lines and reveal a "Show more"
+// toggle only when the rendered notes actually overflow that height.
+function NotesCell({ text }) {
+  const ref = useRef(null);
+  const [expanded, setExpanded] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el) setOverflowing(el.scrollHeight - el.clientHeight > 2);
+  }, [text]);
+
+  if (!text || !text.trim()) return <span className="muted">—</span>;
+
+  return (
+    <div className="notes-cell-inner">
+      <div ref={ref} className={'notes-clamp' + (expanded ? ' expanded' : '')}>
+        <RichText text={text} />
+      </div>
+      {(overflowing || expanded) && (
+        <button type="button" className="link-btn" onClick={() => setExpanded((v) => !v)}>
+          {expanded ? 'Show less' : '… Show more'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function ProblemForm({ initial, withAttemptFields, onSave, onCancel }) {
   const [f, setF] = useState(initial);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
@@ -179,7 +209,10 @@ function ProblemForm({ initial, withAttemptFields, onSave, onCancel }) {
             </select>
           </label>
           <label>Gap / Bug<input value={f.gapBug} onChange={set('gapBug')} /></label>
-          <label>Notes<textarea value={f.notes} onChange={set('notes')} /></label>
+          <div className="notes-field">
+            <span>Notes</span>
+            <NotesEditor value={f.notes} onChange={(v) => setF({ ...f, notes: v })} />
+          </div>
         </>
       )}
       <label>Re-solve date<input type="date" value={f.resolveDate} onChange={set('resolveDate')} /></label>

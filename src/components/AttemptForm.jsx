@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { todayISO, addDaysISO } from '../lib/dates';
 import { OUTCOMES } from '../lib/constants';
+import NotesEditor from './NotesEditor';
 
 // Log mode (resolveDate prop passed): shows the "next re-solve" scheduler and
 // calls onSave(fields, nextResolveDate). Edit mode (no resolveDate): onSave(fields).
@@ -27,7 +28,10 @@ export default function AttemptForm({ initial, resolveDate, onSave, onCancel }) 
         </select>
       </label>
       <label>Gap / Bug<input value={f.gapBug} onChange={set('gapBug')} /></label>
-      <label>Notes<textarea value={f.notes} onChange={set('notes')} /></label>
+      <div className="notes-field">
+        <span>Notes</span>
+        <NotesEditor value={f.notes} onChange={(v) => setF({ ...f, notes: v })} />
+      </div>
       {withReschedule && (
         <>
           <label>
