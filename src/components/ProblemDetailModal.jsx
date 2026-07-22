@@ -3,6 +3,7 @@ import { useData } from '../data/DataProvider';
 import { statusFor, deltaLabel } from '../lib/status';
 import Modal from './Modal';
 import AttemptForm from './AttemptForm';
+import RichText from './RichText';
 
 export default function ProblemDetailModal({ problemId, initialLog, onClose }) {
   const { doc, addAttempt, updateAttempt, deleteAttempt } = useData();
@@ -65,7 +66,7 @@ export default function ProblemDetailModal({ problemId, initialLog, onClose }) {
               </span>
             </div>
             {a.gapBug && <div className="attempt-field"><span className="muted">Gap / Bug:</span> {a.gapBug}</div>}
-            {a.notes && <div className="attempt-notes">{a.notes}</div>}
+            {a.notes && <RichText text={a.notes} className="attempt-notes" />}
           </div>
         )
       )}
